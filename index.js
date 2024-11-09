@@ -12,6 +12,6 @@ app.get("/test", (req, res) => {
   res.status(200).json({res: "Test respons - new version2"});
 });
 
-app.listen(port, () => {
+app.listen(port, () => { 
   console.log(`App is listening at http://localhost:${port}`);
 }); 
