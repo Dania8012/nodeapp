@@ -4,12 +4,12 @@ const port = 3000;
 
 app.get("/", (req, res) => {
   console.log("Sending new logs");
-  res.send("Hello World! v0.09");
+  res.status(200).json({res: "Test response"});
 });
 
 app.get("/test", (req, res) => {
   console.log("Sending new logs");
-  res.send("Test response");
+  res.status(200).json({res: "Test response"});
 });
 
 app.listen(port, () => {
