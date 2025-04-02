@@ -12,9 +12,6 @@ env:
 jobs:
   build-and-push:
     runs-on: self-hosted
-    strategy:
-      matrix:
-        dockerfile: ['Dockerfile', 'Dockerfile.windows']
     permissions:
       id-token: write
       contents: read
