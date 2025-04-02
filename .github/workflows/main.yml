@@ -6,8 +6,8 @@ on:
   workflow_dispatch:
 
 env:
-  ACR_NAME: your-acr-name  # Replace with your ACR name
-  IMAGE_NAME: your-app     # Replace with your image name
+  ACR_NAME: acrdemogh  # Replace with your ACR name
+  IMAGE_NAME: nodeapp     # Replace with your image name
 
 jobs:
   build-and-push:
@@ -19,11 +19,21 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        client-id: e4779b74-8a10-408f-a0f7-9451472cf31b
+        tenant-id: 69a81a89-1523-4c13-8125-5a68febc489e
+        subscription-id: 483d97be-811d-47b3-b66d-de4b5205c1e7
+
+    - name: Login to ACR
+      run: |
+        az acr login --name ${{ env.ACR_NAME }}.azurecr.io
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
-        push: false
+        push: true
         tags: |
           ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:latest
           ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
