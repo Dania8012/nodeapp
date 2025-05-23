@@ -19,11 +19,17 @@ stages:
   - job: ValidateManifests
     steps:
     - script: |
+        # Install kubeval (Linux)
         echo "Installing kubeval..."
-        sudo apt-get update && sudo apt-get install -y kubeval
+        sudo curl -sSL -o /usr/local/bin/kubeval https://github.com/instrumenta/kubeval/releases/latest/download/kubeval-linux-amd64
+        sudo chmod +x /usr/local/bin/kubeval
         
-        echo "Validating manifests..."
-        kubeval eks_resources/*.yaml
+        # Verify installation
+        kubeval --version
+        
+        # Validate manifests
+        echo "Validating Kubernetes manifests..."
+        kubeval --strict eks_resources/*.yaml
       displayName: 'Validate with kubeval'
 
 - stage: Deploy
