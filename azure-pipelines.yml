@@ -39,7 +39,14 @@ stages:
         git checkout -b $(Build.SourceBranch) 
         git pull origin $(Build.SourceBranch) --rebase
         git add .
-        git commit -m "Update image to $(imageTag)"
+        # Commit the image update
+        git commit -m "CI: Update image to $(imageTag)"
+        
+        # Fetch latest changes and rebase
+        git fetch origin
+        git rebase origin/$(Build.SourceBranch)
+        
+        # Push changes
         git push origin HEAD:$(Build.SourceBranch)
       displayName: 'Update manifests and commit'
     
