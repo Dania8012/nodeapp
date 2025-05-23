@@ -31,12 +31,9 @@ stages:
     steps:
     - checkout: self
     - script: |
-        # Update image tag in manifests (example for kustomize)
-        kustomize edit set image $(imageRepository):$(imageTag)
+        # For standard Kubernetes manifests
+        sed -i "s|image: .*/myapp:.*|image: $(imageRepository):$(imageTag)|g" eks_resources/deployment.yaml
         
-        # Commit changes
-        # git config --global user.email "devops@company.com"
-        # git config --global user.name "Azure DevOps"
         git add .
         git commit -m "Update image to $(imageTag)"
         git push origin HEAD:$(Build.SourceBranch)
