@@ -30,11 +30,13 @@ stages:
   - job: UpdateAndCommit
     steps:
     - checkout: self
+      persistCredentials: true
     - script: |
         # For standard Kubernetes manifests
         sed -i "s|image: .*/myapp:.*|image: $(imageRepository):$(imageTag)|g" eks_resources/deployment.yaml
         git config --global user.email "dania.alrefai@bespinglobal.ae"
         git config --global user.name "Dania"
+        git checkout -b $(Build.SourceBranch) 
         git add .
         git commit -m "Update image to $(imageTag)"
         git push origin HEAD:$(Build.SourceBranch)
