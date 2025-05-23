@@ -33,7 +33,7 @@ stages:
       persistCredentials: true
     - script: |
         # For standard Kubernetes manifests
-        sed -i "s|image: .*/myapp:.*|image: $(imageRepository):$(imageTag)|g" eks_resources/deployment.yaml
+        sed -i "s|\(image: \).*|\1$(imageRepository):$(imageTag)|g" eks_resources/deployment.yaml
         git config --global user.email "dania.alrefai@bespinglobal.ae"
         git config --global user.name "Dania"
         git checkout -b $(Build.SourceBranch) 
