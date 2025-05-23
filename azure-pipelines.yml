@@ -31,39 +31,16 @@ stages:
     steps:
     - checkout: self
       persistCredentials: true
-      fetchDepth: 0  # Get complete history for proper merging
-
     - script: |
-        # First, ensure we're on the correct branch with clean state
-        git checkout $(Build.SourceBranch)
-        git reset --hard origin/$(Build.SourceBranch)
-        git clean -fd
-
-        # Update the image in deployment.yaml
+        # For standard Kubernetes manifests
         sed -i "s|\(image: \).*|\1$(imageRepository):$(imageTag)|g" eks_resources/deployment.yaml
-
-        # Configure git identity
         git config --global user.email "dania.alrefai@bespinglobal.ae"
         git config --global user.name "Dania"
-
-        # Commit the changes
-        git add eks_resources/deployment.yaml
-        git commit -m "CI: Update image to $(imageTag)"
-
-        # Pull latest changes with rebase
-        git pull origin $(Build.SourceBranch) --rebase
-
-        # Push changes with atomic operation
-        git push origin HEAD:$(Build.SourceBranch) --atomic
-
-        # Verify the push succeeded
-        if [ $? -ne 0 ]; then
-          echo "##vso[task.logissue type=error]Push failed after rebase"
-          exit 1
-        fi
-      displayName: 'Robust manifest update workflow'
-      env:
-        GIT_TERMINAL_PROMPT: 0  # Disable any terminal prompts
+        git checkout -b $(Build.SourceBranch) 
+        git add .
+        git commit -m "Update image to $(imageTag)"
+        git push origin HEAD:$(Build.SourceBranch)
+      displayName: 'Update manifests and commit'
     
     # - task: TriggerPipeline@1
     #   inputs:
