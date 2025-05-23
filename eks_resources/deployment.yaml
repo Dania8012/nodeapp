@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: nodejs-app
-        image: 381492237991.dkr.ecr.us-east-1.amazonaws.com/node-app-uat:4270fc1
+        image: testreg801.azurecr.io:36015249fa71111a3156270840fec17769b18f4c
         ports:
         - containerPort: 3000  
