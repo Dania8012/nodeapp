@@ -37,6 +37,7 @@ stages:
         git config --global user.email "dania.alrefai@bespinglobal.ae"
         git config --global user.name "Dania"
         git checkout -b $(Build.SourceBranch) 
+        git pull origin $(Build.SourceBranch) --rebase
         git add .
         git commit -m "Update image to $(imageTag)"
         git push origin HEAD:$(Build.SourceBranch)
