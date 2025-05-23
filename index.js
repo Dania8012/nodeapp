@@ -12,7 +12,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/test", (req, res) => {
-  console.log("Sending new logs..");
+  console.log("Sending new logs...");
   res.status(200).sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
