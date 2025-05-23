@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: nodejs-app
-        image: testreg801.azurecr.io:7cf5cf5bb42de107cad1e0bab230db77a6181254
+        image: testreg801.azurecr.io:d8f3e48fd0a82c79dd775feb295b87ad8fd2402a
         ports:
         - containerPort: 3000  
