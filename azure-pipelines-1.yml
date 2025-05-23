@@ -7,11 +7,11 @@ trigger:
     include:
     - eks_resources/**
 
-resources:
-  pipelines:
-  - pipeline: ci-pipeline
-    source: 'ci-pipeline'
-    trigger: true
+# resources:
+#   pipelines:
+#   - pipeline: ci-pipeline
+#     source: 'ci-pipeline'
+#     trigger: true
 
 stages:
 - stage: Validate
