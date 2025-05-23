@@ -31,6 +31,7 @@ stages:
     steps:
     - checkout: self
       persistCredentials: true
+      fetchDepth: 0 
     - script: |
         # For standard Kubernetes manifests
         sed -i "s|\(image: \).*|\1$(imageRepository):$(imageTag)|g" eks_resources/deployment.yaml
