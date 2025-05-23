@@ -19,31 +19,38 @@ stages:
   - job: ValidateManifests
     steps:
     - script: |
-        echo "Installing kubeval..."
-        # Download with proper following of redirects and error handling
-        sudo curl -sSL -o /usr/local/bin/kubeval \
-          -L "https://github.com/instrumenta/kubeval/releases/latest/download/kubeval-linux-amd64" \
-          || (echo "##vso[task.logissue type=error]Failed to download kubeval"; exit 1)
+        echo "Installing kubeval with guaranteed download..."
         
-        # Verify the download is actually a binary
-        file /usr/local/bin/kubeval | grep -q "ELF" || (echo "##vso[task.logissue type=error]Downloaded file is not a valid binary"; exit 1)
+        # First try the direct download URL
+        KUBEVAL_URL="https://github.com/instrumenta/kubeval/releases/download/v0.16.1/kubeval-linux-amd64.tar.gz"
         
-        # Set execute permissions
-        sudo chmod +x /usr/local/bin/kubeval
-        
-        # Verify installation
-        if ! kubeval --version; then
-          echo "##vso[task.logissue type=error]kubeval installation failed"
+        # Download with strict error handling
+        if ! sudo curl -sSL -o kubeval.tar.gz -L "$KUBEVAL_URL"; then
+          echo "##vso[task.logissue type=error]Failed to download kubeval"
           exit 1
         fi
         
-        # Validate manifests with error handling
-        echo "Validating Kubernetes manifests..."
-        kubeval --strict --ignore-missing-schemas eks_resources/*.yaml || exit 1
-      displayName: 'Install and validate with kubeval'
-      env:
-        GITHUB_TOKEN: $(github-token)  # Optional: if you have rate limiting issues
-
+        # Extract and install
+        sudo tar -xzf kubeval.tar.gz -C /usr/local/bin kubeval
+        sudo rm kubeval.tar.gz
+        
+        # Verify the binary
+        if ! file /usr/local/bin/kubeval | grep -q "ELF"; then
+          echo "##vso[task.logissue type=error]Invalid binary downloaded"
+          exit 1
+        fi
+        
+        sudo chmod +x /usr/local/bin/kubeval
+        
+        # Final verification
+        if ! kubeval --version; then
+          echo "##vso[task.logissue type=error]kubeval failed after installation"
+          exit 1
+        fi
+        
+        echo "Validation..."
+        kubeval --strict eks_resources/*.yaml
+      displayName: 'Guaranteed kubeval installation'
 - stage: Deploy
   dependsOn: Validate
   jobs:
