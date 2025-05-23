@@ -1,0 +1,44 @@
+# cd-pipeline.yml
+trigger:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - eks_resources/**
+
+resources:
+  pipelines:
+  - pipeline: ci-pipeline
+    source: 'ci-pipeline'
+    trigger: true
+
+stages:
+- stage: Validate
+  jobs:
+  - job: ValidateManifests
+    steps:
+    - script: |
+        echo "Installing kubeval..."
+        sudo apt-get update && sudo apt-get install -y kubeval
+        
+        echo "Validating manifests..."
+        kubeval eks_resources/*.yaml
+      displayName: 'Validate with kubeval'
+
+- stage: Deploy
+  dependsOn: Validate
+  jobs:
+  - deployment: DeployToAKS
+    environment: 'dev'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: self
+          - task: KubernetesManifest@0
+            inputs:
+              action: 'deploy'
+              kubernetesServiceConnection: 'aksconn'
+              namespace: 'default'
+              manifests: 'eks_resources/*.yaml'
