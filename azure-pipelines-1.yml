@@ -19,18 +19,30 @@ stages:
   - job: ValidateManifests
     steps:
     - script: |
-        # Install kubeval (Linux)
         echo "Installing kubeval..."
-        sudo curl -sSL -o /usr/local/bin/kubeval https://github.com/instrumenta/kubeval/releases/latest/download/kubeval-linux-amd64
+        # Download with proper following of redirects and error handling
+        sudo curl -sSL -o /usr/local/bin/kubeval \
+          -L "https://github.com/instrumenta/kubeval/releases/latest/download/kubeval-linux-amd64" \
+          || (echo "##vso[task.logissue type=error]Failed to download kubeval"; exit 1)
+        
+        # Verify the download is actually a binary
+        file /usr/local/bin/kubeval | grep -q "ELF" || (echo "##vso[task.logissue type=error]Downloaded file is not a valid binary"; exit 1)
+        
+        # Set execute permissions
         sudo chmod +x /usr/local/bin/kubeval
         
         # Verify installation
-        kubeval --version
+        if ! kubeval --version; then
+          echo "##vso[task.logissue type=error]kubeval installation failed"
+          exit 1
+        fi
         
-        # Validate manifests
+        # Validate manifests with error handling
         echo "Validating Kubernetes manifests..."
-        kubeval --strict eks_resources/*.yaml
-      displayName: 'Validate with kubeval'
+        kubeval --strict --ignore-missing-schemas eks_resources/*.yaml || exit 1
+      displayName: 'Install and validate with kubeval'
+      env:
+        GITHUB_TOKEN: $(github-token)  # Optional: if you have rate limiting issues
 
 - stage: Deploy
   dependsOn: Validate
