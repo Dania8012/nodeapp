@@ -33,7 +33,8 @@ stages:
     - script: |
         # For standard Kubernetes manifests
         sed -i "s|image: .*/myapp:.*|image: $(imageRepository):$(imageTag)|g" eks_resources/deployment.yaml
-        
+        git config --global user.email "dania.alrefai@bespinglobal.ae"
+        git config --global user.name "Dania"
         git add .
         git commit -m "Update image to $(imageTag)"
         git push origin HEAD:$(Build.SourceBranch)
