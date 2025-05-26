@@ -30,4 +30,4 @@ stages:
       inputs:
         azureSubscription: 'Dania''s(0c169943-8f0f-4db5-9dcd-7b56e52a1535)'
         appName: 'whiteapp8012'
-        containers: '$(containerRegistry)/$(imageName):$(Build.BuildId)'
+        containers: '$(containerRegistry)/$(imageName):$(imageTag)'
