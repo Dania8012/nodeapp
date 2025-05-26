@@ -11,7 +11,7 @@ variables:
   imageTag: '$(Build.SourceVersion)'
   azureSubscription: '0c169943-8f0f-4db5-9dcd-7b56e52a1535'
   appName: 'whiteapp8012'
-  containerRegistry: 'docker pull testreg801.azurecr.io'
+  containerRegistry: 'testreg801.azurecr.io'
   imageName: 'newapp'
 
 stages:
