@@ -1,29 +1,33 @@
-# Docker
-# Build a Docker image
-# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
-
 trigger:
-- main
-
-resources:
-- repo: self
+  branches:
+    include:
+    - main
+  paths:
+    exclude:
+    - eks_resources/**
 
 variables:
-  tag: '$(Build.BuildId)'
+  imageRepository: 'testreg801.azurecr.io'
+  imageTag: '$(Build.SourceVersion)'
+  azureSubscription: '0c169943-8f0f-4db5-9dcd-7b56e52a1535'
+  appName: 'whiteapp8012'
+  containerRegistry: 'docker pull testreg801.azurecr.io'
+  imageName: 'newapp'
 
 stages:
 - stage: Build
-  displayName: Build image
   jobs:
-  - job: Build
-    displayName: Build
-    pool:
-      vmImage: ubuntu-latest
+  - job: BuildAndPush
     steps:
     - task: Docker@2
-      displayName: Build an image
       inputs:
-        command: build
-        dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
-        tags: |
-          $(tag)
+        containerRegistry: 'testconnecton'
+        repository: 'newapp'
+        command: 'buildAndPush'
+        Dockerfile: 'Dockerfile'
+        tags: '$(imageTag)'
+    - task: AzureWebAppContainer@1
+      inputs:
+        azureSubscription: $(azureSubscription)
+        appName: $(appName)
+        imageName: $(containerRegistry)/$(imageName):$(Build.BuildId)
